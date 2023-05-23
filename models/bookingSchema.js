@@ -1,0 +1,71 @@
+import mongoose, { Schema } from "mongoose";
+
+const bookingShema=new mongoose.Schema({
+    roomId:{
+    type:Schema.Types.ObjectId,
+    required:true,
+    ref:'rooms'
+    },
+    userId:{
+        type:Schema.Types.ObjectId,
+        required:true,
+        ref:'user'
+    },
+    vendorId:{
+        type:Schema.Types.ObjectId,
+        required:true,
+        ref:'vendor'
+    },
+    adult:{
+        type:Number
+    },
+    rooms:{
+        type:Number
+    },
+    location:{
+        type:String
+    },
+    checkIn:{
+        type:String
+    },
+    checkOut:{
+        type:String
+    },
+    dayPrice:{
+        type:Number 
+    },
+    RoomPrice:{
+        type:Number
+    },
+    type:{
+        type:String
+    },
+    total:{
+        type:Number
+    },
+    address:{
+        type:String
+    },
+    phone:{
+        type:Number
+    },
+    place:{
+        type:String
+    },
+    days:{
+        type:Number
+    },
+    payment_status:{
+        type:Boolean
+    },
+    isCancel:{
+        type:Boolean,
+        default:false,
+    },   
+  
+},{
+   timestamps:true,
+}
+)
+const bookingModel=mongoose.model('booking',bookingShema)
+export default bookingModel
