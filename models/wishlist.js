@@ -1,7 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
-
-const reviewSchema=new mongoose.Schema({
+const wishListSchema = new mongoose.Schema({
     roomId:{
         type:Schema.Types.ObjectId,
         required:true,
@@ -17,19 +16,11 @@ const reviewSchema=new mongoose.Schema({
         required:true,
         ref:'vendor'
     },
- 
-        userName:{
-        type:String,
-    },
-    feedback:{
-        type:String,
-    },
-    stars:{
-        type:String
-    },
-  
+    
 },{
     timestamps:true,
 })
-const reviewModel=mongoose.model('review',reviewSchema)
-export default reviewModel;
+
+
+const wishListModel = mongoose.model('wishList',wishListSchema);
+export default  wishListModel;

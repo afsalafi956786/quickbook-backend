@@ -8,6 +8,7 @@ import reviewModel from "../models/reviewSchema.js";
 import couponModel from "../models/couponShema.js";
 import moment from "moment/moment.js";
 import vendorModel from "../models/vendorShema.js";
+import wishListModel from "../models/wishlist.js";
 
 export async function userCheck(req, res) {
   try {
@@ -100,7 +101,7 @@ export async function SignupValidate(req, res) {
           let userId = userInfo._id;
 
           const token = jwt.sign({ userId }, process.env.TOKEN_KEY, {
-            expiresIn: "2h",
+            expiresIn: "30d",
           });
           res.json({
             status: "success",
@@ -133,7 +134,7 @@ export async function singninValidate(req, res) {
           if (isMatch) {
             const userId = user._id;
             const token = jwt.sign({ userId }, process.env.TOKEN_KEY, {
-              expiresIn: "2h",
+              expiresIn: "30d",
             });
             res.json({
               status: "success",
@@ -192,6 +193,8 @@ export async function changePass(req, res) {
         await userModel.findByIdAndUpdate(req.userId, {
           password: newPassword,
         });
+      }else{
+        res.json({ status: "failed", message: "Password not matched" });
       }
       res.json({ status: "success", message: "updated successfully" });
     } else {
@@ -206,7 +209,7 @@ export async function changePass(req, res) {
 export async function getRoomDetails(req, res) {
   try {
     let roomData = await RoomModel.find({ isBanned: false,isApproved:true}).populate(
-      "vendorId"
+      "vendorId"  
     );
     res.json({ status: "success", roomData });
   } catch (error) {
@@ -471,3 +474,100 @@ export async function getPropertyType(req,res){
     return { status: "failed", message: "Network error" };
   }
 }
+
+export async function addWishList (req,res){
+  try{
+   
+    const {roomId , vendorId }= req.body;
+    const userId = req.userId;
+    const user = await userModel.findById(userId);
+    if(!user){
+      return res.json({ status:"false", message: 'User not found '})
+    }
+
+    const existWishList = await wishListModel.findOne({ userId,roomId});
+
+    if(existWishList){
+     return res.json({ statuse: "failed", message: "Room already in your wishlist" });
+    }
+    const wishList = new wishListModel({
+      roomId,
+      userId,
+      vendorId,
+    })
+    await wishList.save();
+    res.json({
+      status: "success",
+      message: "Room added to wishlist successfully",
+      wishList
+    });
+
+  }catch(error){
+    console.log(error.message)
+    return { status: "failed", message: "Network error" };
+  }
+}
+
+export async function getOneWishlist(req,res){
+  try{
+    const userId =req.params.userId;
+    if(!userId){
+      res.json({ statuse: "failed", message: "User not found" });
+    }
+
+    const wishListItems = await wishListModel.find({ userId }).populate('roomId');
+    
+    if(!wishListItems){
+        res.json({ statuse: "failed", message: "your wishlist is empty" });
+    }
+
+    //extract the wishlist rooms
+    // const wishListRooms = wishListItems.map((item)=>item.roomId);
+
+    res.json(wishListItems)
+
+  }catch(error){
+    console.log(error.message)
+    return { status: "failed", message: "Network error" };
+  }
+}
+
+export async function getTopRatedRooms(req,res){
+  try{
+
+    const topRatedRomms = await reviewModel.aggregate([
+      {
+        $group:{
+          _id:'$roomId',
+          averageStars: { $avg: { $toDouble: '$stars' } },
+        },
+      },
+      { $sort: { averageStars: -1 } },
+      { $limit: 5 }, // Retrieve the top 10 rooms
+    ]);
+
+    console.log(topRatedRomms,'top rated rooms')
+
+    const populateTopRatedRooms = await Promise.all(
+      topRatedRomms.map(async(room)=>{
+        const roomDetails = await RoomModel.findById(room._id).populate('vendorId')
+        if(roomDetails){
+           return { ...roomDetails._doc, averageStars: room.averageStars };
+        }else{
+          return null; 
+        }
+       
+      })
+    );
+
+      // Filter out null values (rooms with no details)
+      const filteredTopRatedRooms = populateTopRatedRooms.filter(room => room !== null);
+
+    res.json(filteredTopRatedRooms);
+
+  }catch(error){
+    console.log(error.message)
+    return { status: "failed", message: "Network error" };
+  }
+}
+

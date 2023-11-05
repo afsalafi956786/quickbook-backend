@@ -31,6 +31,7 @@ app.use(express.json({extended: false, limit: '50mb'}));
 app.use(express.static("public"))
 
 
+
 //routes
 app.use('/api/',userRouter);
 app.use('/api/vendor',venderRouter);

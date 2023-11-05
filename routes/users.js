@@ -1,6 +1,6 @@
 import express from "express";
 const router=express.Router();
-import {  SignupValidate,getPropertyType,getfilterCategories,getFilterAmenities,singninValidate,userDataFetch,userCheck,userProfile,changePass,getRoomDetails,getDispalyRoom,getlocalLocation,createBooking,successData ,bookingData,canceleBook,userReview,getRoomReview,getallCoupons,getcoupenApply,getUsersId,getBookingDates} from "../controller/userController.js";
+import {getOneWishlist,addWishList,getTopRatedRooms,SignupValidate,getPropertyType,getfilterCategories,getFilterAmenities,singninValidate,userDataFetch,userCheck,userProfile,changePass,getRoomDetails,getDispalyRoom,getlocalLocation,createBooking,successData ,bookingData,canceleBook,userReview,getRoomReview,getallCoupons,getcoupenApply,getUsersId,getBookingDates} from "../controller/userController.js";
 import { verifyJWT } from "../middleware/auth.js";
 
 
@@ -29,7 +29,10 @@ router.get('/users/:userId',getUsersId)
 router.get('/getDates/:roomId',getBookingDates)
 router.post('/getAmenities',verifyJWT,getFilterAmenities)
 router.post('/getCategories',verifyJWT,getfilterCategories)
-router.post('/getType',verifyJWT,getPropertyType)
+router.post('/getType',verifyJWT,getPropertyType);
+router.post('/wishlist/add',verifyJWT,addWishList);
+router.get('/wishlist/:userId',verifyJWT,getOneWishlist)
+router.get('/top-rated-rooms',getTopRatedRooms)
 
 
 

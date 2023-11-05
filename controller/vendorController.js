@@ -116,12 +116,13 @@ export async function vendorSignup(req, res) {
           let vendorId = vendorInfo._id;
 
           const token = jwt.sign({ vendorId }, process.env.TOKEN_KEY, {
-            expiresIn: "2h",
+            expiresIn: '30d',
           });
           res.json({
             status: "success",
             message: "signup success",
             token: token,
+            vendorInfo
           });
         } else {
           res.json({ status: "failed", message: "Password is not mathced !" });
@@ -143,12 +144,13 @@ export async function vendorLogin(req, res) {
         if (isMatch) {
           const vendorId = vendor._id;
           const token = jwt.sign({ vendorId }, process.env.TOKEN_KEY, {
-            expiresIn: "2h",
+            expiresIn: '30d',
           });
           res.json({
             status: "success",
             message: "signin success",
             token: token,
+            vendor
           });
         } else {
           res.json({ status: "failed", message: "Incorrect password !" });
@@ -177,9 +179,11 @@ export async function vendorData(req, res) {
 export async function addRoom(req, res) {
   try {
     let obj = req.body;
-
+    console.log(obj,'---')
+    
 
     let vendorId = req.vendorId;
+    
     let roomName=await vendorModel.findById(vendorId)
     const room = await RoomModel.create({
       vendorId: vendorId,
@@ -421,13 +425,26 @@ export async function vendorDashBoard(req,res){
       }
       
     ]) 
+    console.log(bookingAmount,'booking paisa')
 
+    // Query to get customers
+    let customers = await bookingModel.distinct("userId", { vendorId });
+    let customerCount = customers.length;
 
-    let customers =await bookingModel.distinct("userId",{vendorId})
-    let customer=customers.length;
+    // Query to get total users
     let users=await bookingModel.find({vendorId})
-    console.log(users.length)
-    res.json({totalBookings,getBookings,bookAmount:bookingAmount[0].totalAmount,customer})
+
+    // Create a response object with the same field names
+    const response = {
+      totalBookings,
+      getBookings,
+      bookingAmount: bookingAmount.length > 0 ? bookingAmount[0].totalAmount : 0,
+      customer: customerCount,
+      users
+    };
+
+    res.json(response);
+
   }catch(error){
     return { status: "failed", message: "Network error" };
   }
