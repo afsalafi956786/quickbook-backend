@@ -5,7 +5,8 @@ import { decode } from "punycode"
 //user jwt 
 export async function verifyJWT(req,res,next){
     try{
-        const token=req.headers['usertoken']
+        const token=req.headers['usertoken'];
+        console.log(token,'token')
     
         if(!token){
             res.json({'status':'failed','message':'You need a token'})

@@ -1,6 +1,6 @@
 import express from "express";
 const router=express.Router();
-import {getOneWishlist,addWishList,getTopRatedRooms,SignupValidate,getPropertyType,getfilterCategories,getFilterAmenities,singninValidate,userDataFetch,userCheck,userProfile,changePass,getRoomDetails,getDispalyRoom,getlocalLocation,createBooking,successData ,bookingData,canceleBook,userReview,getRoomReview,getallCoupons,getcoupenApply,getUsersId,getBookingDates} from "../controller/userController.js";
+import {getOneWishlist,deleteWishlist,addWishList,getTopRatedRooms,SignupValidate,getPropertyType,getfilterCategories,getFilterAmenities,singninValidate,userDataFetch,userCheck,userProfile,changePass,getRoomDetails,getDispalyRoom,getlocalLocation,createBooking,successData ,bookingData,canceleBook,userReview,getRoomReview,getallCoupons,getcoupenApply,getUsersId,getBookingDates} from "../controller/userController.js";
 import { verifyJWT } from "../middleware/auth.js";
 
 
@@ -33,7 +33,7 @@ router.post('/getType',verifyJWT,getPropertyType);
 router.post('/wishlist/add',verifyJWT,addWishList);
 router.get('/wishlist/:userId',verifyJWT,getOneWishlist)
 router.get('/top-rated-rooms',getTopRatedRooms)
-
+router.delete('/delete-wishlist/:roomId',verifyJWT,deleteWishlist)
 
 
 
