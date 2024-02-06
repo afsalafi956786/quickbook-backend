@@ -24,8 +24,6 @@ export async function createChat(req,res){
 
 export async function vendorChat(req,res){
     try{
-
-        
         const chat=await chatModel.find({
             members:{$in:[req.params.vendorId]}
         })
